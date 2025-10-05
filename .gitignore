@@ -11,3 +11,6 @@ wheels/
 
 # Data Folder
 Data_Archive/
+
+# Credential File
+.env

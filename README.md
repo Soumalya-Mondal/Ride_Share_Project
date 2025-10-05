@@ -35,16 +35,18 @@ The **Ride Share** dataset is large (~12 GB, `.parquet` format), requiring GPU a
 
 ```
 .
-├── taxi_zone_lookup_table_create.py      # Creates Taxi Lookup Zone table
-├── rideshare_data_table_create.py        # Creates Ride Share table
-├── taxi_zone_lookup_data_entry.py        # Inserts data into Taxi Lookup Zone
-├── rideshare_data_data_entry.py          # Inserts data into Ride Share
+└── support/
+    ├── taxi_zone_lookup_table_create.py  # Creates Taxi Lookup Zone table
+    └── rideshare_data_table_create.py    # Creates Ride Share table
+    └── taxi_zone_lookup_data_entry.py    # Inserts data into Taxi Lookup Zone
+    └── rideshare_data_data_entry.py      # Inserts data into Ride Share
+├── main.py                               # Main Script
 ├── .env                                  # Stores DB credentials 
 ├── README.md                             # Project documentation
 ├── .python-version                       # Specifies the Python version used in development
 ├── pyproject.toml                        # Project metadata and dependency definitions for uv
 ├── uv.lock                               # Lock file with exact dependency versions
-└── Data-Archive/
+└── Data_Archive/
     ├── taxi_zone_lookup.csv              # Lookup data (example)
     └── rideshare_data.parquet            # Large Ride Share dataset (~12GB)
 ```
@@ -58,24 +60,9 @@ The **Ride Share** dataset is large (~12 GB, `.parquet` format), requiring GPU a
 uv sync
 ```
 
-### 1️⃣ Create Taxi Lookup Zone Table
+### 2️⃣ Step 2: Execute Script
 ```bash
-uv run taxi_zone_lookup_table_create.py
-```
-
-### 2️⃣ Create Ride Share Table
-```bash
-uv run rideshare_data_table_create.py
-```
-
-### 3️⃣ Insert Data into Taxi Lookup Zone
-```bash
-uv run taxi_zone_lookup_data_entry.py
-```
-
-### 4️⃣ Insert Data into Ride Share Table
-```bash
-uv run rideshare_data_data_entry.py
+uv run main.py
 ```
 
 ---
