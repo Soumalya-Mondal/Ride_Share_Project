@@ -17,6 +17,6 @@ def log_writer(status: str, script_name: str, step: str, message: str):
     # write into file:S03
     try:
         with open(str(activity_log_file_path), mode = 'a', encoding = 'utf-8') as log_file:
-            log_file.write(f"{datetime.now().strftime('%d-%b-%Y')} - {datetime.now().strftime('%H:%M:%S')} - {status.upper():<6} - {script_name.upper():<30} - {step.upper():<2} - {message.lower()}\n")
+            log_file.write(f"{datetime.now().strftime('%d-%b-%Y')} - {datetime.now().strftime('%H:%M:%S')} - {status.upper():<7} - {script_name.upper():<30} - {step.upper():<2} - {message.lower()}\n")
     except Exception as error:
         print(f'ERROR - [Log-Writer:S03] - {str(error)}')
