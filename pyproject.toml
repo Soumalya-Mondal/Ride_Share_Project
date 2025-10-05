@@ -1,7 +1,7 @@
 [project]
 name = "rideshare-data-project"
 version = "0.1.0"
-description = "Add your description here"
+description = "This project sets up PostgreSQL tables for Taxi Lookup Zones and Ride Share data, and loads large-scale datasets efficiently using GPU-accelerated data processing."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
