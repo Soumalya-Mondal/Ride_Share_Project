@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "cudf-cu12>=25.8.0",
+    "pandas>=2.3.3",
     "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.1.1",
 ]

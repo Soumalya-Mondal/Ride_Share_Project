@@ -17,3 +17,6 @@ Data_Archive/
 
 # Activity Log File
 activity.log
+
+# CUDA File Log
+cufile.log

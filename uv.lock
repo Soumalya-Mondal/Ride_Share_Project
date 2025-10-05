@@ -721,6 +721,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "cudf-cu12" },
+    { name = "pandas" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
 ]
@@ -728,6 +729,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "cudf-cu12", specifier = ">=25.8.0" },
+    { name = "pandas", specifier = ">=2.3.3" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
 ]
