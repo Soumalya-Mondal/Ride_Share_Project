@@ -8,8 +8,8 @@ This project sets up PostgreSQL tables for **Taxi Lookup Zones** and **Ride Shar
 
 The project automates:
 - Creation of two PostgreSQL tables:
-  - **taxi_lookup_zone**
-  - **ride_share**
+  - **taxi_zone_lookup**
+  - **ride_share_data**
 - Efficient data loading into PostgreSQL using **cuDF** (GPU DataFrames) and **psycopg2**.
 
 The **Ride Share** dataset is large (~12 GB, `.parquet` format), requiring GPU acceleration for faster loading and transformation.
