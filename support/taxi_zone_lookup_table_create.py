@@ -25,11 +25,11 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
 
     # check if ".env" file is present:S04
     try:
-        if (env_file_path.exists() and env_file_path.is_file()):
+        if ((env_file_path.exists()) and (env_file_path.is_file())):
             env_values = dotenv_values(str(env_file_path))
-            log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '04', message = 'envrionment file loaded into script')
+            log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '04', message = 'environment file loaded into script')
         else:
-            return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '04', 'message' : '".env" File Is Missing'}
+            return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '04', 'message' : '".env" file is missing'}
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '04', 'message' : str(error)}
 
