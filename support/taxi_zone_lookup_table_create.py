@@ -54,7 +54,9 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
             location_id INT NOT NULL UNIQUE,
             borough VARCHAR(100) NOT NULL,
             zone VARCHAR(200) NOT NULL,
-            service_zone VARCHAR(100) NOT NULL
+            service_zone VARCHAR(100) NOT NULL,
+            row_inserted_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            row_updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         ALTER TABLE taxi_zone_lookup OWNER TO soumalya;'''
         log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '06', message = '"taxi_zone_lookup" table create sql defined')
@@ -68,7 +70,7 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
             SELECT FROM information_schema.tables
             WHERE table_schema = 'public'
             AND table_name = 'taxi_zone_lookup'
-        )'''
+        );'''
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '07', 'message' : str(error)}
 
@@ -84,7 +86,7 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
                     if (int(database_cursor.fetchone()[0]) == 0):
                         # execute drop table SQL
                         database_cursor.execute('DROP TABLE taxi_zone_lookup')
-                        log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '08', message = '"taxi_zone_lookup" table is empty and dropped from the database')
+                        log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '08', message = '"taxi_zone_lookup" table present and empty hence dropped from the database')
                     else:
                         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '08', 'message' : '"taxi_zone_lookup" table already present inside database with data'}
                 else:
@@ -107,9 +109,55 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
                 database_cursor.execute(taxi_zone_lookup_table_present_check_sql)
                 if (database_cursor.fetchone()[0]):
                     log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '10', message = '"taxi_zone_lookup" table created inside database')
-                    return {'status' : 'SUCCESS', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '10', 'message' : '"taxi_zone_lookup" table created inside database'}
                 else:
-                    log_writer(status = 'ERROR', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '10', message = '"taxi_zone_lookup" table not created inside database')
                     return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '10', 'message' : '"taxi_zone_lookup" table not created inside database'}
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '10', 'message' : str(error)}
+
+    # execute table trigger function sql:S11
+    try:
+        taxi_zone_lookup_trigger_function_sql = '''
+        CREATE OR REPLACE FUNCTION update_row_updated_time()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            NEW.row_updated_time = NOW();
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;'''
+        with psycopg2.connect(**database_connection_parameter) as database_connection: #type: ignore
+            with database_connection.cursor() as database_cursor:
+                database_cursor.execute(taxi_zone_lookup_trigger_function_sql)
+    except Exception as error:
+        return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '11', 'message' : str(error)}
+
+    # execute table trigger definition sql:S12
+    try:
+        taxi_zone_lookup_trigger_definition_sql = '''
+        CREATE TRIGGER trg_update_row_updated_time
+        BEFORE UPDATE ON taxi_zone_lookup
+        FOR EACH ROW
+        EXECUTE FUNCTION update_row_updated_time();'''
+        with psycopg2.connect(**database_connection_parameter) as database_connection: #type: ignore
+            with database_connection.cursor() as database_cursor:
+                database_cursor.execute(taxi_zone_lookup_trigger_definition_sql)
+    except Exception as error:
+        return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '12', 'message' : str(error)}
+
+    # check if trigger function created:S13
+    try:
+        trigger_check_sql = '''
+        SELECT COUNT(*)
+        FROM information_schema.triggers
+        WHERE event_object_table = 'taxi_zone_lookup'
+        AND trigger_name = 'trg_update_row_updated_time';'''
+        with psycopg2.connect(**database_connection_parameter) as database_connection:  # type: ignore
+            with database_connection.cursor() as database_cursor:
+                database_cursor.execute(trigger_check_sql)
+                if (database_cursor.fetchone()[0] > 0):
+                    return {'status' : 'SUCCESS', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '13', 'message' : '"taxi_zone_lookup" table created inside database'}
+                else:
+                    # execute drop table sql
+                    database_cursor.execute('DROP TABLE taxi_zone_lookup')
+                    return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '13', 'message' : 'trigger function not created hence "taxi_zone_lookup" table dropped'}
+    except Exception as error:
+        return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '13', 'message' : str(error)}
