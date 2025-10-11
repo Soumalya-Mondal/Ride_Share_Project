@@ -106,7 +106,7 @@ if __name__ == '__main__':
     except Exception as error:
         log_writer(status = 'ERROR', script_name = 'Main', step = '08', message = str(error))
         print(f'ERROR - [Main:S08] - {str(error)}')
-        
+
     # define "execution_end_time"
     execution_end_time = time.time()
     print(f'INFO - Total Execution Time: {(execution_end_time - execution_start_time):.2f} Seconds')
