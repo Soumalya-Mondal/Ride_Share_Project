@@ -132,9 +132,9 @@ def rideshare_data_data_entry(batch_size: int, env_file_path: str, input_file_pa
         return value
 
     # loop through all the batch
+    count = 0
     for batch_record in input_parquet_reader:
         inserted_rows = []
-        count = 1
         # load rows into dataframe:S11
         try:
             input_parquet_dataframe = batch_record.to_pandas()
@@ -164,6 +164,7 @@ def rideshare_data_data_entry(batch_size: int, env_file_path: str, input_file_pa
                     clean_numeric(row.get('dollars_per_mile')) # dollars_per_mile
                 )
                 inserted_rows.append(row_value)
+                count += 1
         except Exception as error:
             return {'status' : 'ERROR', 'script_name' : 'Rideshare-Data-Data-Entry', 'step' : '12', 'message' : str(error)}
 
@@ -174,7 +175,7 @@ def rideshare_data_data_entry(batch_size: int, env_file_path: str, input_file_pa
                     database_cursor.executemany(rideshare_data_insert_sql, inserted_rows)
                     database_connection.commit()
                     log_writer(status = 'INFO', script_name = 'Rideshare-Data-Data-Entry', step = '13', message = f'total "{len(inserted_rows)}" rows inserted')
-                    print(f'INFO - Total: "{1000 * int(count):>10}/{total_rows}" Rows Inserted')
+                    print(f'INFO - Total: "{count:>10}/{total_rows}" Rows Inserted')
         except Exception as error:
             return {'status' : 'ERROR', 'script_name' : 'Rideshare-Data-Data-Entry', 'step' : '13', 'message' : str(error)}
 
