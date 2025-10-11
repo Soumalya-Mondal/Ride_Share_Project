@@ -1,5 +1,5 @@
 # define "taxi_zone_lookup_table_create" function
-def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
+def taxi_zone_lookup_table_create(env_file_path: str) -> dict[str, str]: #type: ignore
     # importing python module:S01
     try:
         from pathlib import Path
@@ -16,17 +16,16 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '02', 'message' : str(error)}
 
-    # define folder and file path:S03
+    # converting ".env" file into path object:S03
     try:
-        parent_folder_path = Path.cwd()
-        env_file_path = Path(parent_folder_path) / '.env'
+        env_file_path_object = Path(env_file_path)
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '03', 'message' : str(error)}
 
     # check if ".env" file is present:S04
     try:
-        if ((env_file_path.exists()) and (env_file_path.is_file())):
-            env_values = dotenv_values(str(env_file_path))
+        if ((env_file_path_object.exists()) and (env_file_path_object.is_file())):
+            env_values = dotenv_values(str(env_file_path_object))
             log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '04', message = 'environment file loaded into script')
         else:
             return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '04', 'message' : '".env" file is missing'}
@@ -107,9 +106,7 @@ def taxi_zone_lookup_table_create() -> dict[str, str]: #type: ignore
         with psycopg2.connect(**database_connection_parameter) as database_connection: #type: ignore
             with database_connection.cursor() as database_cursor:
                 database_cursor.execute(taxi_zone_lookup_table_present_check_sql)
-                if (database_cursor.fetchone()[0]):
-                    log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Table-Create', step = '10', message = '"taxi_zone_lookup" table created inside database')
-                else:
+                if (not (database_cursor.fetchone()[0])):
                     return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '10', 'message' : '"taxi_zone_lookup" table not created inside database'}
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Table-Create', 'step' : '10', 'message' : str(error)}
