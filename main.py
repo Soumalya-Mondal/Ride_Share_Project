@@ -4,6 +4,7 @@ if __name__ == '__main__':
     try:
         from pathlib import Path
         import sys
+        import time
     except Exception as error:
         print(f'ERROR - [Main:S01] - {str(error)}')
 
@@ -50,6 +51,9 @@ if __name__ == '__main__':
     except Exception as error:
         log_writer(status = 'ERROR', script_name = 'Main', step = '04', message = str(error))
         print(f'ERROR - [Main:S04] - {str(error)}')
+
+    # define "execution_start_time"
+    execution_start_time = time.time()
 
     # executing "taxi_zone_lookup_table_create" function to create "taxi_zone_lookup" table:S05
     try:
@@ -102,3 +106,7 @@ if __name__ == '__main__':
     except Exception as error:
         log_writer(status = 'ERROR', script_name = 'Main', step = '08', message = str(error))
         print(f'ERROR - [Main:S08] - {str(error)}')
+        
+    # define "execution_end_time"
+    execution_end_time = time.time()
+    print(f'INFO - Total Execution Time: {(execution_end_time - execution_start_time):.2f} Seconds')
