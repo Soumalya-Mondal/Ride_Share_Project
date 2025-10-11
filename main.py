@@ -12,6 +12,9 @@ if __name__ == '__main__':
         sys.path.append(str(Path.cwd()))
         from support.log_writer import log_writer
         from support.database.taxi_zone_lookup_table_create import taxi_zone_lookup_table_create
+        from support.database.taxi_zone_lookup_data_entry import taxi_zone_lookup_data_entry
+        from support.database.rideshare_data_table_create import rideshare_data_table_create
+        from support.database.rideshare_data_data_entry import rideshare_data_data_entry
     except Exception as error:
         print(f'ERROR - [Main:S02] - {str(error)}')
 
@@ -61,69 +64,41 @@ if __name__ == '__main__':
         log_writer(status = 'ERROR', script_name = 'Main', step = '05', message = str(error))
         print(f'ERROR - [Main:S05] - {str(error)}')
 
+    # executing "taxi_zone_lookup_data_entry" function to insert data into database:S06
+    try:
+        taxi_zone_lookup_data_entry_backend_response = taxi_zone_lookup_data_entry(env_file_path = str(env_file_path), input_file_path = str(taxi_zone_lookup_input_file_path))
+        # check result
+        if (str(taxi_zone_lookup_data_entry_backend_response['status']).lower() == 'error'):
+            print(f"ERROR - [{taxi_zone_lookup_data_entry_backend_response['script_name']}] - [{taxi_zone_lookup_data_entry_backend_response['step']}] - {taxi_zone_lookup_data_entry_backend_response['message']}")
+            exit(1)
+        if (str(taxi_zone_lookup_data_entry_backend_response['status']).lower() == 'success'):
+            log_writer(status = 'SUCCESS', script_name = 'Main', step = '06', message = str(taxi_zone_lookup_data_entry_backend_response['message']))
+    except Exception as error:
+        log_writer(status = 'ERROR', script_name = 'Main', step = '06', message = str(error))
+        print(f'ERROR - [Main:S06] - {str(error)}')
 
+    # executing "rideshare_data_table_create" function to create "rideshare_data" table:S07
+    try:
+        rideshare_data_table_create_backend_response = rideshare_data_table_create(env_file_path = str(env_file_path))
+        # check result
+        if (str(rideshare_data_table_create_backend_response['status']).lower() == 'error'):
+            print(f"ERROR - [{rideshare_data_table_create_backend_response['script_name']}] - [{rideshare_data_table_create_backend_response['step']}] - {rideshare_data_table_create_backend_response['message']}")
+            exit(1)
+        if (str(rideshare_data_table_create_backend_response['status']).lower() == 'success'):
+            log_writer(status = 'SUCCESS', script_name = 'Main', step = '07', message = str(rideshare_data_table_create_backend_response['message']))
+    except Exception as error:
+        log_writer(status = 'ERROR', script_name = 'Main', step = '07', message = str(error))
+        print(f'ERROR - [Main:S07] - {str(error)}')
 
-# 📘 File Metadata Summary
-# ==================================================
-# Number of Row Groups: 6
-# Number of Columns: 19
-# Total Rows: 365,083,103
-# Created By: parquet-cpp-arrow version 6.0.1
-# Format Version: 1.0
-
-# 📂 Row Group Details
-# ==================================================
-# Row Group 0:
-#   - Num Rows: 67,108,864
-#   - Total Byte Size: 2098.36 MB
-#   - Columns: 19
-
-# Row Group 1:
-#   - Num Rows: 67,108,864
-#   - Total Byte Size: 2163.92 MB
-#   - Columns: 19
-
-# Row Group 2:
-#   - Num Rows: 67,108,864
-#   - Total Byte Size: 2212.56 MB
-#   - Columns: 19
-
-# Row Group 3:
-#   - Num Rows: 67,108,864
-#   - Total Byte Size: 2118.92 MB
-#   - Columns: 19
-
-# Row Group 4:
-#   - Num Rows: 67,108,864
-#   - Total Byte Size: 2173.58 MB
-#   - Columns: 19
-
-# Row Group 5:
-#   - Num Rows: 29,538,783
-#   - Total Byte Size: 923.49 MB
-#   - Columns: 19
-
-# 🧱 Schema
-# ==================================================
-# <pyarrow._parquet.ParquetSchema object at 0x74ef077930c0>
-# required group field_id=-1 schema {
-#   optional binary field_id=-1 business (String);
-#   optional int64 field_id=-1 pickup_location;
-#   optional int64 field_id=-1 dropoff_location;
-#   optional double field_id=-1 trip_length;
-#   optional double field_id=-1 request_to_dropoff;
-#   optional double field_id=-1 request_to_pickup;
-#   optional double field_id=-1 total_ride_time;
-#   optional double field_id=-1 on_scene_to_pickup;
-#   optional double field_id=-1 on_scene_to_dropoff;
-#   optional binary field_id=-1 time_of_day (String);
-#   optional int32 field_id=-1 date (Date);
-#   optional int64 field_id=-1 hour_of_day;
-#   optional int64 field_id=-1 week_of_year;
-#   optional int64 field_id=-1 month_of_year;
-#   optional double field_id=-1 passenger_fare;
-#   optional double field_id=-1 driver_total_pay;
-#   optional double field_id=-1 rideshare_profit;
-#   optional double field_id=-1 hourly_rate;
-#   optional double field_id=-1 dollars_per_mile;
-# }
+    # executing "rideshare_data_data_entry" function to insert data into table:S08
+    try:
+        rideshare_data_data_entry_backend_response = rideshare_data_data_entry(batch_size = 1000, env_file_path = str(env_file_path), input_file_path = str(rideshare_data_input_file_path))
+        # check result
+        if (str(rideshare_data_data_entry_backend_response['status']).lower() == 'error'):
+            print(f"ERROR - [{rideshare_data_data_entry_backend_response['script_name']}] - [{rideshare_data_data_entry_backend_response['step']}] - {rideshare_data_data_entry_backend_response['message']}")
+            exit(1)
+        if (str(rideshare_data_data_entry_backend_response['status']).lower() == 'success'):
+            log_writer(status = 'SUCCESS', script_name = 'Main', step = '08', message = str(rideshare_data_data_entry_backend_response['message']))
+    except Exception as error:
+        log_writer(status = 'ERROR', script_name = 'Main', step = '08', message = str(error))
+        print(f'ERROR - [Main:S08] - {str(error)}')

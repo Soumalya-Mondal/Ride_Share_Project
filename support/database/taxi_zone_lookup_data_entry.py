@@ -1,5 +1,5 @@
 # define "taxi_zone_lookup_data_entry" function
-def taxi_zone_lookup_data_entry() -> dict[str, str]: #type: ignore
+def taxi_zone_lookup_data_entry(env_file_path: str, input_file_path: str) -> dict[str, str]: #type: ignore
     # importing python module:S01
     try:
         from pathlib import Path
@@ -17,19 +17,17 @@ def taxi_zone_lookup_data_entry() -> dict[str, str]: #type: ignore
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '02', 'message' : str(error)}
 
-    # define folder and file path:S03
+    # define folder path object:S03
     try:
-        parent_folder_path = Path.cwd()
-        env_file_path = Path(parent_folder_path) / '.env'
-        data_archive_folder_path = Path(parent_folder_path) / 'Data_Archive'
-        taxi_zone_lookup_input_csv_file_path = Path(data_archive_folder_path) / 'taxi_zone_lookup.csv'
+        env_file_path_object = Path(env_file_path)
+        taxi_zone_lookup_input_csv_file_path_object = Path(input_file_path)
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '03', 'message' : str(error)}
 
     # check if ".env" file is present:S04
     try:
-        if ((env_file_path.exists()) and (env_file_path.is_file())):
-            env_values = dotenv_values(str(env_file_path))
+        if ((env_file_path_object.exists()) and (env_file_path_object.is_file())):
+            env_values = dotenv_values(str(env_file_path_object))
             log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Data-Entry', step = '04', message = 'environment file loaded into script')
         else:
             return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '04', 'message' : '".env" File Is Missing'}
@@ -38,10 +36,10 @@ def taxi_zone_lookup_data_entry() -> dict[str, str]: #type: ignore
 
     # check if input file is present:S05
     try:
-        if ((taxi_zone_lookup_input_csv_file_path.exists()) and (taxi_zone_lookup_input_csv_file_path.is_file()) and (taxi_zone_lookup_input_csv_file_path.suffix.lower() == '.csv')):
-            log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Data-Entry', step = '05', message = f'"{taxi_zone_lookup_input_csv_file_path.name}" file is present')
+        if ((taxi_zone_lookup_input_csv_file_path_object.exists()) and (taxi_zone_lookup_input_csv_file_path_object.is_file()) and (taxi_zone_lookup_input_csv_file_path_object.suffix.lower() == '.csv')):
+            log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Data-Entry', step = '05', message = f'"{taxi_zone_lookup_input_csv_file_path_object.name}" file is present')
         else:
-            return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '05', 'message' : f'"{taxi_zone_lookup_input_csv_file_path.name}" file is missing'}
+            return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '05', 'message' : f'"{taxi_zone_lookup_input_csv_file_path_object.name}" file is missing'}
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '05', 'message' : str(error)}
 
@@ -83,7 +81,7 @@ def taxi_zone_lookup_data_entry() -> dict[str, str]: #type: ignore
 
     # load input file:S09
     try:
-        input_dataframe = pandas.read_csv(str(taxi_zone_lookup_input_csv_file_path), header = 0)
+        input_dataframe = pandas.read_csv(str(taxi_zone_lookup_input_csv_file_path_object), header = 0)
         log_writer(status = 'SUCCESS', script_name = 'Taxi-Zone-Lookup-Data-Entry', step = '09', message = f'input file loaded with "{input_dataframe.shape[0]}" rows')
     except Exception as error:
         return {'status' : 'ERROR', 'script_name' : 'Taxi-Zone-Lookup-Data-Entry', 'step' : '09', 'message' : str(error)}
